@@ -46,12 +46,13 @@ a {
 }
 
 .table-users table {
-  margin: 50px auto;
+  margin: 0 auto;
   border-collapse: collapse;
 }
 
 .table-users th {
   text-align: left;
+  cursor: pointer;
 }
 
 .table-users th,
@@ -61,4 +62,30 @@ a {
 
 .table-users td img {
   display: flex;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  user-select: none;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.pagination li {
+  float: left;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color .1s ease-in;
+  border-radius: 3px;
+  width: .8rem;
+  text-align: center;
+}
+
+.pagination li:hover {
+  background-color: #bee3fa;
+}
+
+.pagination li:active {
+  background-color: #67c5ff;
 }
