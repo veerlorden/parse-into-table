@@ -41,18 +41,20 @@ a {
   color: white;
 }
 
-.table-users tr {
-  border-bottom: 1px solid lightgray;
-}
-
-.table-users table {
+.table-users {
   margin: 0 auto;
   border-collapse: collapse;
+  min-width: 80vw;
+}
+
+.table-users tr {
+  border-bottom: 1px solid lightgray;
 }
 
 .table-users th {
   text-align: left;
   cursor: pointer;
+  user-select: none;
 }
 
 .table-users th,
@@ -62,6 +64,14 @@ a {
 
 .table-users td img {
   display: flex;
+}
+
+.table-users th.sorted[data-order="1"]::after {
+  content: "▼"
+}
+
+.table-users th.sorted[data-order="-1"]::after {
+  content: "▲"
 }
 
 .pagination {
@@ -92,8 +102,4 @@ a {
 
 .pagination li.active {
   background-color: #67c5ff;
-}
-
-th::after {
-  content: "▼"
 }

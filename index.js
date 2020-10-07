@@ -1,4 +1,4 @@
-const container = document.getElementById('table-users')
+const container = document.getElementById('container')
 let seed = ''
 
 async function fetchUsers(page) {
@@ -7,6 +7,7 @@ async function fetchUsers(page) {
   try {
     const response = await fetch(request)
     const json = await response.json()
+    seed = json.info.seed
     container.innerHTML = createTable(json, page)
   } catch (error) {
     console.warn(error)
@@ -22,8 +23,7 @@ document.addEventListener('click', (event) => {
     fetchUsers(1)
   }
   else if (event.target.dataset.type === 'sort') {
-    const id = event.target.dataset.row
-    sortTable(id)
+    sortTable(event.target)
   }
 })
 
@@ -35,7 +35,7 @@ function addUsersOnPage(users) {
         <td>${user.name.first}</td>
         <td>${user.name.last}</td>
         <td>${user.email}</td>
-        <td>${user.location.city}</td>
+        <td>${user.location.country}</td>
         <td>${user.phone}</td>
         <td><img src="${user.picture.thumbnail}"></td>
       </tr>
@@ -57,7 +57,6 @@ function addPagination(count, active) {
 }
 
 function createTable(json, page) {
-  seed = json.info.seed
   const list = addUsersOnPage(json.results)
   const pagination = addPagination(10, page)
 
@@ -65,16 +64,16 @@ function createTable(json, page) {
     <ul class="pagination">
       ${pagination}
     </ul>
-    <table>
+    <table class="table-users">
       <thead>
         <tr>
-          <th data-type="sort" data-row="0">№ <i class="fas fa-sort-down"></i></th>
-          <th data-type="sort" data-row="1">First</th>
-          <th data-type="sort" data-row="2">Last</th>
-          <th data-type="sort" data-row="3">Email</th>
-          <th data-type="sort" data-row="4">City</th>
-          <th data-type="sort" data-row="5">Phone</th>
-          <th data-row="6">Photo</th>
+          <th data-type="sort">№</th>
+          <th data-type="sort">First</th>
+          <th data-type="sort">Last</th>
+          <th data-type="sort">Email</th>
+          <th data-type="sort">Country</th>
+          <th data-type="sort">Phone</th>
+          <th>Photo</th>
         </tr>
       </thead>
       <tbody>
@@ -87,12 +86,20 @@ function createTable(json, page) {
   `
 }
 
-function sortTable(id) {
-  const rows = [...document.querySelectorAll('table tr')]
-    .slice(1)
-    .sort((rowA, rowB) => rowA.cells[id].innerHTML > rowB.cells[id].innerHTML
-      ? 1
-      : -1)
+function sortTable(target) {
+  const index = [...target.parentNode.cells].indexOf(target)
+  const order = (target.dataset.order = -(target.dataset.order || -1))
+  const tBody = target.closest('table').tBodies[0]
+  const collator = new Intl.Collator(['en', 'ru'], { numeric: true })
 
-  document.querySelector('tbody').append(...rows)
+  const comparator = (index, order) => (a, b) => order * collator.compare(
+    a.children[index].innerHTML,
+    b.children[index].innerHTML
+  )
+
+  tBody.append(...[...tBody.rows].sort(comparator(index, order)))
+
+  for (const cell of target.parentNode.cells) {
+    cell.classList.toggle('sorted', cell === target)
+  }
 }
