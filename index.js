@@ -1,24 +1,29 @@
-const button = document.getElementById('btn')
 const container = document.getElementById('table-users')
 let seed = ''
 
-// button.addEventListener('click', fetchUsers)
-fetchUsers()
-async function fetchUsers(page = 1) {
+async function fetchUsers(page) {
   const request = `https://randomuser.me/api/?page=${page}&results=50&seed=${seed}`
-  let response = await fetch(request)
-  let json = await response.json()
-  seed = json.info.seed
-  console.log(json)
-  const list = addUsersOnPage(json.results)
-  const pagination = addPagination(10)
-  container.innerHTML = createTable(list, pagination)
+
+  try {
+    const response = await fetch(request)
+    const json = await response.json()
+    container.innerHTML = createTable(json, page)
+  } catch (error) {
+    console.warn(error)
+  }
 }
 
 document.addEventListener('click', (event) => {
   if (event.target.dataset.type === 'page') {
-    const page = event.target.innerHTML
+    const page = parseInt(event.target.innerHTML)
     fetchUsers(page)
+  }
+  else if (event.target.dataset.type === 'btn') {
+    fetchUsers(1)
+  }
+  else if (event.target.dataset.type === 'sort') {
+    const id = event.target.dataset.row
+    sortTable(id)
   }
 })
 
@@ -26,7 +31,7 @@ function addUsersOnPage(users) {
   const usersList = users.map((user, index) => {
     return `
       <tr>
-        <td class="index">${index + 1}</td>
+        <td>${index + 1}</td>
         <td>${user.name.first}</td>
         <td>${user.name.last}</td>
         <td>${user.email}</td>
@@ -39,31 +44,37 @@ function addUsersOnPage(users) {
   return usersList.join('')
 }
 
-function addPagination(count) {
+function addPagination(count, active) {
   let pagination = ''
   for (let i = 0; i < count; i++) {
-    pagination += `
-      <li data-type="page">${i + 1}</li>
-    `
+    if (active === i + 1) {
+      pagination += `<li class="active" data-type="page">${i + 1}</li>`
+      continue
+    }
+    pagination += `<li data-type="page">${i + 1}</li>`
   }
   return pagination
 }
 
-function createTable(list, pagination) {
+function createTable(json, page) {
+  seed = json.info.seed
+  const list = addUsersOnPage(json.results)
+  const pagination = addPagination(10, page)
+
   return `
     <ul class="pagination">
       ${pagination}
     </ul>
-    <table class="table_sort">
+    <table>
       <thead>
         <tr>
-          <th>№</th>
-          <th>First</th>
-          <th>Last</th>
-          <th>Email</th>
-          <th>City</th>
-          <th>Phone</th>
-          <th>Photo</th>
+          <th data-type="sort" data-row="0">№ <i class="fas fa-sort-down"></i></th>
+          <th data-type="sort" data-row="1">First</th>
+          <th data-type="sort" data-row="2">Last</th>
+          <th data-type="sort" data-row="3">Email</th>
+          <th data-type="sort" data-row="4">City</th>
+          <th data-type="sort" data-row="5">Phone</th>
+          <th data-row="6">Photo</th>
         </tr>
       </thead>
       <tbody>
@@ -76,24 +87,12 @@ function createTable(list, pagination) {
   `
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function sortTable(id) {
+  const rows = [...document.querySelectorAll('table tr')]
+    .slice(1)
+    .sort((rowA, rowB) => rowA.cells[id].innerHTML > rowB.cells[id].innerHTML
+      ? 1
+      : -1)
 
-  const getSort = ({ target }) => {
-    const order = (target.dataset.order = -(target.dataset.order || -1));
-    const index = [...target.parentNode.cells].indexOf(target);
-    const collator = new Intl.Collator(['en', 'ru'], { numeric: true });
-    const comparator = (index, order) => (a, b) => order * collator.compare(
-      a.children[index].innerHTML,
-      b.children[index].innerHTML
-    );
-
-    for (const tBody of target.closest('table').tBodies)
-      tBody.append(...[...tBody.rows].sort(comparator(index, order)));
-
-    for (const cell of target.parentNode.cells)
-      cell.classList.toggle('sorted', cell === target);
-  };
-
-  document.querySelectorAll('.table_sort thead').forEach(tableTH => tableTH.addEventListener('click', () => getSort(event)));
-
-});
+  document.querySelector('tbody').append(...rows)
+}
