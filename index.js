@@ -61,9 +61,11 @@ function createTable(json, page) {
   const pagination = addPagination(10, page)
 
   return `
-    <ul class="pagination">
-      ${pagination}
-    </ul>
+    <div class="header">
+      <ul class="pagination">
+        ${pagination}
+      </ul>
+    </div>
     <table class="table-users">
       <thead>
         <tr>

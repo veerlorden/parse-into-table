@@ -11,6 +11,41 @@ a {
   text-decoration: none;
 }
 
+.container {
+  width: 80vw;
+  margin: 0 auto;
+}
+
+.pagination {
+  display: flex;
+  list-style: none;
+  user-select: none;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.pagination li {
+  float: left;
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color .1s ease-in;
+  border-radius: 3px;
+  width: .8rem;
+  text-align: center;
+}
+
+.pagination li:hover {
+  background-color: #bee3fa;
+}
+
+.pagination li:active {
+  background-color: #67c5ff;
+}
+
+.pagination li.active {
+  background-color: #67c5ff;
+}
+
 .request-users {
   width: 400px;
   height: 150px;
@@ -42,9 +77,8 @@ a {
 }
 
 .table-users {
-  margin: 0 auto;
   border-collapse: collapse;
-  min-width: 80vw;
+  width: 100%;
 }
 
 .table-users tr {
@@ -72,34 +106,4 @@ a {
 
 .table-users th.sorted[data-order="-1"]::after {
   content: "▲"
-}
-
-.pagination {
-  display: flex;
-  list-style: none;
-  user-select: none;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.pagination li {
-  float: left;
-  padding: 10px 15px;
-  cursor: pointer;
-  transition: background-color .1s ease-in;
-  border-radius: 3px;
-  width: .8rem;
-  text-align: center;
-}
-
-.pagination li:hover {
-  background-color: #bee3fa;
-}
-
-.pagination li:active {
-  background-color: #67c5ff;
-}
-
-.pagination li.active {
-  background-color: #67c5ff;
 }
