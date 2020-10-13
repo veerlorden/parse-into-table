@@ -11,6 +11,36 @@ a {
   text-decoration: none;
 }
 
+.request-users {
+  width: 400px;
+  height: 150px;
+  text-align: center;
+  margin-top: -75px;
+  margin-left: -200px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.request-users p {
+  margin-bottom: 15px;
+}
+
+.btn {
+  width: 100px;
+  display: inline-block;
+  padding: 0.3em 1em;
+  color: #67c5ff;
+  border: solid 2px #67c5ff;
+  border-radius: 3px;
+  transition: .3s;
+}
+
+.btn:hover {
+  background: #67c5ff;
+  color: white;
+}
+
 .container {
   width: 80vw;
   margin: 0 auto;
@@ -46,34 +76,8 @@ a {
   background-color: #67c5ff;
 }
 
-.request-users {
-  width: 400px;
-  height: 150px;
-  text-align: center;
-  margin-top: -75px;
-  margin-left: -200px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-}
-
-.request-users p {
-  margin-bottom: 15px;
-}
-
-.btn {
-  width: 100px;
-  display: inline-block;
-  padding: 0.3em 1em;
-  color: #67c5ff;
-  border: solid 2px #67c5ff;
-  border-radius: 3px;
-  transition: .3s;
-}
-
-.btn:hover {
-  background: #67c5ff;
-  color: white;
+.search {
+  margin-bottom: 20px;
 }
 
 .table-users {
@@ -101,9 +105,13 @@ a {
 }
 
 .table-users th.sorted[data-order="1"]::after {
-  content: "▼"
+  content: "▼";
 }
 
 .table-users th.sorted[data-order="-1"]::after {
-  content: "▲"
+  content: "▲";
+}
+
+.table-users tr.hide {
+  display: none;
 }

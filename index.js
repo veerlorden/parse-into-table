@@ -1,14 +1,21 @@
-const container = document.getElementById('container')
+const app = document.getElementById('app')
+let tBody = ''
 let seed = ''
 
 async function fetchUsers(page) {
-  const request = `https://randomuser.me/api/?page=${page}&results=50&seed=${seed}`
+  const request = `
+    https://randomuser.me/api/?page=${page}&results=50&seed=${seed}
+  `
 
   try {
     const response = await fetch(request)
     const json = await response.json()
     seed = json.info.seed
-    container.innerHTML = createTable(json, page)
+    app.innerHTML = createTable(json, page)
+    tBody = document.querySelector('.table-users').tBodies[0]
+
+    document.getElementById('search').addEventListener('input', searchValue)
+
   } catch (error) {
     console.warn(error)
   }
@@ -61,37 +68,45 @@ function createTable(json, page) {
   const pagination = addPagination(10, page)
 
   return `
-    <div class="header">
-      <ul class="pagination">
-        ${pagination}
-      </ul>
-    </div>
-    <table class="table-users">
-      <thead>
-        <tr>
-          <th data-type="sort">№</th>
-          <th data-type="sort">First</th>
-          <th data-type="sort">Last</th>
-          <th data-type="sort">Email</th>
-          <th data-type="sort">Country</th>
-          <th data-type="sort">Phone</th>
-          <th>Photo</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${list}
-      </tbody>
-    </table>
-    <ul class="pagination">
-      ${pagination}
-    </ul>
+    <header class="header">
+      <div class="container" id="container">
+        <div class="toolbar">
+          <ul class="pagination">
+            ${pagination}
+          </ul>
+          <div class="search">
+            <input type="text" placeholder="Search" id="search">
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container" id="container">
+        <table class="table-users">
+          <thead>
+            <tr>
+              <th data-type="sort">№</th>
+              <th data-type="sort">First</th>
+              <th data-type="sort">Last</th>
+              <th data-type="sort">Email</th>
+              <th data-type="sort">Country</th>
+              <th data-type="sort">Phone</th>
+              <th>Photo</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${list}
+          </tbody>
+        </table>
+      </div>
+    </main>
   `
 }
 
 function sortTable(target) {
   const index = [...target.parentNode.cells].indexOf(target)
   const order = (target.dataset.order = -(target.dataset.order || -1))
-  const tBody = target.closest('table').tBodies[0]
   const collator = new Intl.Collator(['en', 'ru'], { numeric: true })
 
   const comparator = (index, order) => (a, b) => order * collator.compare(
@@ -103,5 +118,29 @@ function sortTable(target) {
 
   for (const cell of target.parentNode.cells) {
     cell.classList.toggle('sorted', cell === target)
+  }
+}
+
+function searchValue() {
+  let value = this.value.trim()
+
+  const tableRows = tBody.rows
+  if (value !== '') {
+    [...tableRows].forEach(row => {
+      for (i = 0; i < row.children.length; i++) {
+        const cell = row.children[i]
+        const position = cell.innerText.search(RegExp(value, "gi"))
+        if (position === -1) {
+          row.classList.add('hide')
+        } else {
+          row.classList.remove('hide')
+          break
+        }
+      }
+    })
+  } else {
+    [...tableRows].forEach(row => {
+      row.classList.remove('hide')
+    })
   }
 }
